@@ -1,0 +1,93 @@
+{
+  "active": false,
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "FunctionItem",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "FunctionItem": {
+      "main": [
+        [
+          {
+            "node": "Google Sheets",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "createdAt": "2020-02-25T14:03:31.046Z",
+  "id": "1",
+  "name": "OYO - Stock IN/OUT Webhook to google sheets",
+  "nodes": [
+    {
+      "parameters": {},
+      "name": "Start",
+      "type": "n8n-nodes-base.start",
+      "typeVersion": 1,
+      "position": [
+        220,
+        200
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "sheetId": "19XeQWUv9o1M-ndDRINeU2J6NIRnDnOC6dzkzg2a_DTE",
+        "range": "Sheet1!A:F",
+        "options": {}
+      },
+      "name": "Google Sheets",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 1,
+      "position": [
+        820,
+        190
+      ],
+      "credentials": {
+        "googleApi": "sheets-production"
+      }
+    },
+    {
+      "parameters": {
+        "authentication": "basicAuth",
+        "httpMethod": "POST",
+        "path": "oyostockinout",
+        "options": {}
+      },
+      "name": "Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [
+        450,
+        190
+      ],
+      "credentials": {
+        "httpBasicAuth": "OYO-STOCK IN/OUT creds"
+      }
+    },
+    {
+      "parameters": {
+        "functionCode": "item.platform = item.body.platform;\nitem.action = item.body.action;\nitem.timestamp = item.body.ts_utc;\nitem.locationid = item.body.status[0].location.id;\nvar items = item.body.status[0].items;\nvar itemIds = \"\";\nvar refIds = \"\";\n\nfor(i = 0 ; i < items.length; i++) {\n  var itemId = items[i].id;\n  var refId = items[i].ref_id;\n  \n  if(i == (items.length - 1)){\n    itemIds = itemIds + itemId;\n    refIds = refIds + refId;\n    break;\n  }\n  itemIds = itemIds + itemId + \",\";\n  refIds = refIds + refId + \",\";\n}\n\nitem.itemid = itemIds;\nitem.refid = refIds;\nitem.body = 0;\nitem.headers = 0;\nitem.query= 0;\n\nreturn item;"
+      },
+      "name": "FunctionItem",
+      "type": "n8n-nodes-base.functionItem",
+      "typeVersion": 1,
+      "position": [
+        620,
+        190
+      ]
+    }
+  ],
+  "settings": {},
+  "staticData": null,
+  "updatedAt": "2020-10-30T17:48:40.501Z"
+}
